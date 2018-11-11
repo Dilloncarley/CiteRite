@@ -65,7 +65,9 @@
                             </div>
                           </div>
             </div>
-      
+            {% for user in users %}
+            <li>{{user.name}}</li>
+             {% endfor %}
           
         
                     <div class="col s12 m7 ">
