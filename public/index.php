@@ -16,6 +16,10 @@
         'cache' => null,
     ));
   
+    //database set up PDO class
+    $db = new PDO('mysql:host='.$app->config('dbHost').';dbname='.$app->config('dbName').'', $app->config('dbUser'), $app->config('dbPass'));
+
+  
 
     // App routes
     require 'src/routes.php';
