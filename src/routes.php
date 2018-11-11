@@ -1,17 +1,5 @@
 <?php 
-// $app->get('/{name}', function ($request, $response, $args) {
-//     $sql = "SELECT * FROM users";
-//     $stmt = $this->db->query($sql);
-//     $results = [];
-//         while($row = $stmt->fetch()) {
-//             $results[] = $row;
-//         }
-//     // $response->getBody()->write(var_export($results, true));
-//     // return $response;
-//     return $this->view->render($response, 'profile.html', [
-//         'users' =>  $results
-//     ]);
-// })->setName('profile');
+
 
 //home page
 $app->get('/', function () use ($app, $twig) {
@@ -40,8 +28,11 @@ $app->get('/student-dashboard', function ($request, $response) {
 });
 
 //specific quiz page
-$app->get('/quiz/:id', function($id) use ($app, $twig) {
-    echo $twig->render('quiz.html', array('id' => $id));
+$app->get('/quiz/:id', function($id) use ($app, $twig, $db) {
+    $sql = "SELECT * FROM users";
+    $users = $db->query($sql);
+    echo $twig->render('quiz.html', array('id' => $id, 'users' => $users));
+    $db = null;
 });
 
 ?>
