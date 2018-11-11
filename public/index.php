@@ -1,8 +1,6 @@
 <?php 
-    // use \Psr\Http\Message\ServerRequestInterface as Request;
-    // use \Psr\Http\Message\ResponseInterface as Response;
     require 'vendor/autoload.php';
-    // require 'config/config.php';
+    require 'config/config.php';
 
     if (PHP_SAPI === 'cli-server' && $_SERVER['SCRIPT_FILENAME'] !== __FILE__) { return false; }
 
@@ -10,11 +8,10 @@
     //config app with settings
     $app = new \Slim\Slim();
     
-    $app->config(array(
-        'debug' => true,
-        'templates.path' => '../templates'
-    ));
-    $loader = new Twig_Loader_Filesystem('templates');
+    $app->config($config_array);
+    $settingValue = $app->config('templates.path');
+
+    $loader = new Twig_Loader_Filesystem($settingValue);
     $twig = new Twig_Environment($loader, array(
         'cache' => null,
     ));
@@ -22,16 +19,6 @@
 
     // App routes
     require 'src/routes.php';
- 
-    // $app->get('/hello/{name}', function ($request, $response, $args) {
-    //     // $records = $this->db->table('test')->where('name', 'like', '%foo%')->get();
-
-        
-        
-    // $response->getBody()->write(var_export($records, true));
-    // return $response;
-    //     // return $response->write("Hello " . $args['name']);
-    // });
 
     // Run app
     $app->run();
