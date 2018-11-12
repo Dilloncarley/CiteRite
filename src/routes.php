@@ -1,5 +1,5 @@
 <?php 
-
+ require 'citation/citationClass.php';
 
 //home page
 $app->get('/', function () use ($app, $twig) {
@@ -34,5 +34,28 @@ $app->get('/quiz/:id', function($id) use ($app, $twig, $db) {
     echo $twig->render('quiz.html', array('id' => $id, 'users' => $users));
     $db = null;
 });
+
+
+
+
+//generating quiz
+$app->get('/create_quiz', function() use ($app, $twig, $db) {
+    // $sql = "SELECT * FROM users";
+    // $users = $db->query($sql);
+    echo $twig->render('create_quiz.html', array());
+    // $db = null;
+});
+$app->post('/create_quiz', function() use ($app, $twig, $db) {
+
+    $citationValue = $app->request->post('citation');     //request param
+    $citationObject = new Citation($citationValue, 3);
+    $citationAuthors = $citationObject->getAuthorNames();
+  
+    
+    echo $twig->render('create_quiz.html', array( 'matches' => var_dump($citationAuthors), 'authors' => $app->request->post('citation')));
+});
+// $app->put('/quiz/:id', function($id) use ($app, $twig, $db) {
+   
+// });
 
 ?>
