@@ -101,7 +101,13 @@
               <a href="{{app.request.getRootUri}}" class="brand-logo">CiteRite</a>
               <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
               <ul class="right hide-on-med-and-down">
-                <li><a href="{{app.request.getRootUri}}/login">Login</a></li>
+                  {% if netId %}
+                     <li>{{netId}}</li>
+                     <li><a href="{{app.request.getRootUri}}/logout">Logout</a></li>
+
+                  {% else %}
+                  <li><a href="{{app.request.getRootUri}}/login">Login</a></li>
+                  {% endif %}
                 <li><a href="{{app.request.getRootUri}}/about">About</a></li>
               </ul>
             </div>
@@ -119,8 +125,10 @@
       <script type="text/javascript" src="{{app.request.getRootUri}}/js/froala_editor.min.js"></script>
       <script type="text/javascript" src="{{app.request.getRootUri}}/js/fullscreen.min.js"></script>
       
-   
+      
       <script type="text/javascript">
+        M.AutoInit();
+
        $(function() { $('.editor').froalaEditor({
             theme: 'custom',
             height: 275,
