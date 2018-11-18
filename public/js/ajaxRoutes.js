@@ -1,5 +1,4 @@
-  
-   $(function () {
+  $(function () {
 
         //edit_quiz.html - when saving general quiz data (title, due date)
         $(".save-btn").click(function(e) {
