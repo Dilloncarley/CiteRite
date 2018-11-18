@@ -1,24 +1,105 @@
 <?php 
+session_start();
+
+$netId = 'dc1829';
+$isAdmin = false;
+$authenticateForRole = function ( $role = 'admin' ) {
+    return function () use ( $role ) {
+        $user = User::fetchFromDatabaseSomehow();
+        if ( $user->belongsToRole($role) === false ) {
+            $app = \Slim\Slim::getInstance();
+            $app->flash('error', 'Login required');
+            $app->redirect('/');
+        }
+    };
+};
 //home page
-$app->get('/', function () use ($app, $twig) {
+$app->get('/', function () use ($app, $twig, $netId) {
+    echo $twig->render('home.html', array('app' => $app, 'netId' => $netId));
+
+});
+$app->get('/auth/:netId', function ($netId) use ($app, $twig) {
     
-    echo $twig->render('home.html', array('name' => 'Fabien','app' => $app));
+    echo $twig->render('home.html', array('netId' => $netId, 'app' => $app));
 
 });
 
 //login page
 $app->get('/login', function() use ($app, $twig) {
-    echo $twig->render('login.html', array('name' => 'Fabien','app' => $app));
+     //auth through CAS system
+     echo $app->render('casSystem.php', array('app' => $app));
+   
+});
+//login page
+$app->get('/logout', function() use ($app, $twig) {
+    $_SESSION['phpCAS']['user'] = null;
+    $req = $app->request;
+
+    //Get root URI
+    $rootUri = $req->getRootUri();
+    $app->response->redirect( $rootUri );
+
 });
 
+
 //about page
-$app->get('/about', function() use ($app, $twig)  {
-    echo $twig->render('about.html', array('name' => 'Fabien','app' => $app));
+$app->get('/about', function() use ($app, $twig, $netId)  {
+    
+    echo $twig->render('about.html', array('app' => $app, 'netId' => $netId));
 });
 
 //professor dashboard
-$app->get('/professor-dashboard', function() use ($app, $twig)  {
-    echo $twig->render('professor-dashboard.html', array('app' => $app));
+// API group
+$app->group('/professor-dashboard', function () use ($app, $netId) {
+
+    // Quiz group
+    $app->group('/quiz', function () use ($app) {
+
+        // create quiz
+        $app->post('/create', function () {
+
+        });
+        // view quiz
+        $app->get('/view/:id', function ($id) {
+
+        });
+
+        // Delete quiz with ID
+        $app->delete('/delete/:id', function ($id) {
+
+        });
+
+        // Update quiz with ID
+        $app->put('/update/:id', function ($id) {
+
+        });
+
+        // Questions group
+        $app->group('/quiz/question', function () use ($app) {
+
+        // create question
+        $app->post('/create', function () {
+
+        });
+        // view question
+        $app->get('/view/:id', function ($id) {
+
+        });
+
+        // Delete question with ID
+        $app->delete('/delete/:id', function ($id) {
+
+        });
+
+        // Update question with ID
+        $app->put('/update/:id', function ($id) {
+
+        });
+
+        
+
+    });
+
 });
 
 
@@ -39,7 +120,7 @@ $app->get('/404', function() use ($app, $twig)  {
 
 //where a professor creates a quiz
 $app->get('/create_quiz', function() use ($app, $twig) {
-    echo $twig->render('create_quiz.html',array('app' => $app));
+    echo $twig->render('create_quiz.html', array('app' => $app));
 });
 
 //when a professor creates a quiz
@@ -100,7 +181,7 @@ $app->post('/update_quiz', function() use ($app, $db) {
     $quizUpdatedTitle = json_encode($req->post('quiz_title'));
     $quizUpdatedDate =  $req->post('date');
     $quizUpdatedTime = $req->post('time');
-    
+
     $time_in_24_hour_format  =   date("H:i", strtotime($quizUpdatedTime));
     $timeStamp = $quizUpdatedDate .= " " . $time_in_24_hour_format . ":00";
 
