@@ -3,16 +3,16 @@ session_start();
 
 $netId = 'dc1829';
 $isAdmin = false;
-$authenticateForRole = function ( $role = 'admin' ) {
-    return function () use ( $role ) {
-        $user = User::fetchFromDatabaseSomehow();
-        if ( $user->belongsToRole($role) === false ) {
-            $app = \Slim\Slim::getInstance();
-            $app->flash('error', 'Login required');
-            $app->redirect('/');
-        }
-    };
-};
+// $authenticateForRole = function ( $role = 'admin' ) {
+//     return function () use ( $role ) {
+//         if ( $user->belongsToRole($role) === false ) {
+//             $app = \Slim\Slim::getInstance();
+//             $app->flash('error', 'Login required');
+//             $app->redirect('/');
+//         }
+//     };
+// };
+
 //home page
 $app->get('/', function () use ($app, $twig, $netId) {
     echo $twig->render('home.html', array('app' => $app, 'netId' => $netId));
@@ -52,54 +52,55 @@ $app->get('/about', function() use ($app, $twig, $netId)  {
 // API group
 $app->group('/professor-dashboard', function () use ($app, $netId) {
 
-    // Quiz group
-    $app->group('/quiz', function () use ($app) {
+        // Quiz group
+        $app->group('/quiz', function () use ($app) {
 
-        // create quiz
-        $app->post('/create', function () {
+            // create quiz
+            $app->post('/create', function () {
 
-        });
-        // view quiz
-        $app->get('/view/:id', function ($id) {
+            });
+            // view quiz
+            $app->get('/view/:id', function ($id) {
 
-        });
+            });
 
-        // Delete quiz with ID
-        $app->delete('/delete/:id', function ($id) {
+            // Delete quiz with ID
+            $app->delete('/delete/:id', function ($id) {
 
-        });
+            });
 
-        // Update quiz with ID
-        $app->put('/update/:id', function ($id) {
+            // Update quiz with ID
+            $app->put('/update/:id', function ($id) {
 
-        });
+            });
 
-        // Questions group
-        $app->group('/quiz/question', function () use ($app) {
+            // Questions group
+            $app->group('/quiz/question', function () use ($app) {
 
-        // create question
-        $app->post('/create', function () {
+            // create question
+            $app->post('/create', function () {
 
-        });
-        // view question
-        $app->get('/view/:id', function ($id) {
+            });
+            // view question
+            $app->get('/view/:id', function ($id) {
 
-        });
+            });
 
-        // Delete question with ID
-        $app->delete('/delete/:id', function ($id) {
+            // Delete question with ID
+            $app->delete('/delete/:id', function ($id) {
 
-        });
+            });
 
-        // Update question with ID
-        $app->put('/update/:id', function ($id) {
+            // Update question with ID
+            $app->put('/update/:id', function ($id) {
 
-        });
+            });
 
         
 
-    });
+        });
 
+    });
 });
 
 
