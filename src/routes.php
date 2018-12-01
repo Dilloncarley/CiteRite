@@ -21,7 +21,7 @@ $app->get('/404/:err', function($err) use ($app, $twig, $netId){
 //login page
 $app->get('/login', function() use ($app, $twig, $db) {
      //auth through CAS system
-     echo $app->render('casSystem.php', array('app' => $app));
+     echo $app->render('casSystem.php', array('app' => $app, 'db' => $db));
    
 });
 //logout page
