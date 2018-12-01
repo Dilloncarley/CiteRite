@@ -24,7 +24,7 @@
            $_SESSION['user_id'] =  $db->query($query)->fetchColumn();
         }
 
-         header("Location: ". $rootUri . "/");
+         header("Location: ". $rootUri . "");
          exit;
       } else {
          header("Location: ". $rootUri . "");
