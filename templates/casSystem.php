@@ -1,7 +1,7 @@
 <?php
 
     // CAS authentication 
-    include_once('../cosmiccommerce/src/auth/inc/CAS/1.3.5/casAuth.php');
+    include_once('../CiteRite/src/auth/inc/CAS/1.3.5/casAuth.php');
 
     $req = $app->request;
     //Get root URI
