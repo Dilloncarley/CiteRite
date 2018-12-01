@@ -1,6 +1,7 @@
 <?php 
-    require 'vendor/autoload.php';
-    require 'config/config.php';
+    require '../CiteRite/vendor/autoload.php';
+    require '../CiteRite/config/config.php';
+    
     if (PHP_SAPI === 'cli-server' && $_SERVER['SCRIPT_FILENAME'] !== __FILE__) { return false; }
     
     //config app with settings
@@ -17,9 +18,10 @@
     
     //database set up PDO class
     $db = new PDO('mysql:host='.$app->config('dbHost').';dbname='.$app->config('dbName').'', $app->config('dbUser'), $app->config('dbPass'));
-  
+    
+    
     // App routes
-    require 'src/routes.php';
+    require '../CiteRite/src/routes.php';
     // Run app
     $app->run();
 ?>

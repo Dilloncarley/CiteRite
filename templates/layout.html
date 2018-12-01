@@ -12,8 +12,8 @@
       <link href="//cdn01.its.msstate.edu/e/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
       <script type="text/javascript" src="//cdn01.its.msstate.edu/e/jquery/3.3.1/jquery-3.3.1.min.js"></script>
-
       <script type="text/javascript" src="{{app.request.getRootUri}}/js/materialize.min.js"></script>
+
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         {% endblock %}
@@ -92,36 +92,72 @@
         bottom: 2px;
         left: 15px;
       }
+      
+    .header{
+        position: relative;
+        left: 10px;
+    }
       </style>
     </head>
 
     <body class="">
         <nav>
             <div class="nav-wrapper  blue-grey lighten-1">
-              <a href="{{app.request.getRootUri}}" class="brand-logo">CiteRite</a>
+              <a href="{{app.request.getRootUri}}/" class="brand-logo center">CiteRite</a>
               <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
               <ul class="right hide-on-med-and-down">
-                <li><a href="{{app.request.getRootUri}}/login">Login</a></li>
-                <li><a href="{{app.request.getRootUri}}/about">About</a></li>
+                  {% if netId %}
+                  {% if isAdmin %}
+                  <li ><a  href="{{app.request.getRootUri}}/professor-dashboard" >Dashboard</a></li>
+                  {% else %}
+                  <li ><a  href="{{app.request.getRootUri}}/student-dashboard" >Dashboard</a></li>
+
+                  {% endif %}
+                  <li ><a  href="#!" >{{netId}}</a></li>
+                  <li><a href="{{app.request.getRootUri}}/logout">Logout</a></li>
+                 
+      
+                  {% else %}
+                  <li><a href="{{app.request.getRootUri}}/login">Login</a></li>
+                  {% endif %}
               </ul>
             </div>
           </nav>
-        
+          
           <ul class="sidenav  blue-grey lighten-1" id="mobile-demo">
-              <li><a href="{{app.request.getRootUri}}/login">Login</a></li>
               <li><a href="{{app.request.getRootUri}}/about">About</a></li>
+
+            {% if netId %}
+            <ul id="dropdown1" class="dropdown-content">
+                <li><a href="#!">one</a></li>
+                <li><a href="#!">two</a></li>
+                <li class="divider"></li>
+                <li><a href="#!">three</a></li>
+              </ul>
+            <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">{{netId}}</a></li>
+            
+            <li><a href="{{app.request.getRootUri}}/logout">Logout</a></li>
+
+            {% else %}
+            <li><a href="{{app.request.getRootUri}}/login">Login</a></li>
+            {% endif %}
           </ul>
         <div id="content">{% block content %}{% endblock %}</div>
       <!--JavaScript at end of body for optimized loading-->
       <!--Msstate's jquery cdn-->
-     
+
       <script type="text/javascript" src="{{app.request.getRootUri}}/js/ajaxRoutes.js"></script>
       <script type="text/javascript" src="{{app.request.getRootUri}}/js/froala_editor.min.js"></script>
       <script type="text/javascript" src="{{app.request.getRootUri}}/js/fullscreen.min.js"></script>
       
-   
+      
       <script type="text/javascript">
-       $(function() { $('.editor').froalaEditor({
+       M.AutoInit();
+      
+       $(function() {
+       
+
+          $('.editor').froalaEditor({
             theme: 'custom',
             height: 275,
             zIndex: 2003,
@@ -131,6 +167,8 @@
             toolbarButtons: ['undo', 'redo' , '|', 'bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'outdent', 'indent', 'clearFormatting'],
             toolbarButtonsXS: ['undo', 'redo' , '-', 'bold', 'italic', 'underline', 'outdent', 'indent']
         }) 
+
+        
       }); </script>
      
    
