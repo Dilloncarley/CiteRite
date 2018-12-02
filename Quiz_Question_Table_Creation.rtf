@@ -25,14 +25,7 @@ DROP TABLE IF EXISTS `quest_prob`;
 CREATE TABLE `quest_prob` (
   `quiz_id` int(11) NOT NULL,
   `ques_id` int(11) NOT NULL,
-  `author` varchar(300) DEFAULT NULL,
-  `year` varchar(100) DEFAULT NULL,
-  `title_art` varchar(100) DEFAULT NULL,
-  `title_period` varchar(100) DEFAULT NULL,
-  `vol` varchar(100) DEFAULT NULL,
-  `iss` varchar(100) DEFAULT NULL,
-  `pages` varchar(100) DEFAULT NULL,
-  `doi` varchar(100) DEFAULT NULL,
+  `problem' longtext NOT NULL,
   PRIMARY KEY (`ques_id`),
   KEY `fk_quest_prob_quizzes` (`quiz_id`),
   CONSTRAINT `fk_quest_prob_quizzes` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE
