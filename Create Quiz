@@ -1,0 +1,13 @@
+function create_quiz($quizDueTime, $q_name){
+  $new_form = date(“H:I”, strtotime($quizDueTime));
+  $quiz_due_date .= “ “ . $new_form . “:00”;
+  $sql = “INSERT INTO quizzes “ . “(description, due_date) ” . “VALUES” . “(‘$q_name’, ‘$quiz_due_date’)”;
+  $retval = mysql_query($sql, $conn);
+  if(!$retval){
+  	die(‘Could not enter data: ‘ . mysql_error());
+  }
+}
+// This function expects the due date and quiz name that will be submitted for creation.
+// This function expects the connection to the database to already be made and that the database has already been selected, i.e. mysql_select_db(‘[INSERT NAME]’).
+// This function will throw an error if the query is unable to complete.
+// Be sure to check elements match the desired elements within the database.

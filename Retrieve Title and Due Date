@@ -1,0 +1,18 @@
+function retrieve_data($q_id){
+  $sql = ‘SELECT description, due_date FROM quizzes WHERE quiz_id = ‘{$q_id}’;
+  $retval = mysql_query($sql, $conn);
+
+  if(!$retval){
+  	die(‘Could not get data: ‘ . mysql_error());
+  }
+  while($row = mysql_fetch_array($retval, MYSQL_ASSOC)){
+  	$elements = array($row[‘description’], $row[‘due_date’]);
+  }
+  return $elements;
+}
+// This function will expect the quiz id that the desired data is from.
+// This function expects the connection to the database to already be made under the variable $conn and that the database has already been selected, i.e. mysql_select_db(‘[INSERT NAME]’).
+// This function can gather more data if the case is needed, but the array will need to be adjusted as more elements are wanted.
+// This function will return an array containing all the elements of the user.
+// This function will throw an error if it is unable to retrieve the data.
+// Be sure to check elements match the desired elements within the database.

@@ -1,0 +1,53 @@
+
+DROP TABLE IF EXISTS `quizzes`;
+
+CREATE TABLE `quizzes` (
+  `quiz_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT NULL,
+  `dte_creatd` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `due_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`quiz_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `quizzes` WRITE;
+/*!40000 ALTER TABLE `quizzes` DISABLE KEYS */;
+
+INSERT INTO `quizzes` (`quiz_id`, `title`, `dte_creatd`, `due_date`)
+VALUES
+	(5,'Journal Citations','2018-11-18 05:32:08','2018-11-30 05:14:00');
+
+/*!40000 ALTER TABLE `quizzes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+DROP TABLE IF EXISTS `quest_prob`;
+
+CREATE TABLE `quest_prob` (
+  `quiz_id` int(11) NOT NULL,
+  `ques_id` int(11) NOT NULL AUTO_INCREMENT,
+  `problem' longtext NOT NULL,
+  PRIMARY KEY (`ques_id`),
+  KEY `fk_quest_prob_quizzes` (`quiz_id`),
+  CONSTRAINT `fk_quest_prob_quizzes` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+
+DROP TABLE IF EXISTS `quest_ans`;
+
+CREATE TABLE `quest_ans` (
+  `quiz_id` int(11) NOT NULL,
+  `ques_id` int(11) NOT NULL AUTO_INCREMENT,
+  'answer' longtext NOT NULL,
+  PRIMARY KEY (`ques_id`),
+  KEY `fk_quest_ans_quizzes` (`quiz_id`),
+  CONSTRAINT `fk_quest_ans_quizzes` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
