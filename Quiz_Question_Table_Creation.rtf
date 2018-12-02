@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `quest_prob`;
 
 CREATE TABLE `quest_prob` (
   `quiz_id` int(11) NOT NULL,
-  `ques_id` int(11) NOT NULL,
+  `ques_id` int(11) NOT NULL AUTO_INCREMENT,
   `problem' longtext NOT NULL,
   PRIMARY KEY (`ques_id`),
   KEY `fk_quest_prob_quizzes` (`quiz_id`),
@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS `quest_ans`;
 
 CREATE TABLE `quest_ans` (
   `quiz_id` int(11) NOT NULL,
-  `ques_id` int(11) NOT NULL,
+  `ques_id` int(11) NOT NULL AUTO_INCREMENT,
   'answer' longtext NOT NULL,
   PRIMARY KEY (`ques_id`),
   KEY `fk_quest_ans_quizzes` (`quiz_id`),
