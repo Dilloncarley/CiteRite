@@ -3,6 +3,6 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^  index.php [L]
-    RewriteCond %{HTTP_HOST} !^pluto.cse.msstate.edu$ [NC]
-    RewriteBase /~dc1829/
+    RewriteCond %{HTTP_HOST} !^https://apaciterite.cep.msstate.edu/group4$ [NC]
+    RewriteBase //var/www/site/htdocs/group4/public/
 </IfModule>
