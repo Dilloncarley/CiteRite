@@ -28,7 +28,9 @@ CREATE TABLE `quest_prob` (
   `problem' longtext NOT NULL,
   PRIMARY KEY (`ques_id`),
   KEY `fk_quest_prob_quizzes` (`quiz_id`),
-  CONSTRAINT `fk_quest_prob_quizzes` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE
+  KEY 'fk_quest_prob_quest_ans' ('ques_id'),
+  CONSTRAINT `fk_quest_prob_quizzes` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE,
+  CONSTRAINT 'fk_quest_prob_quest_ans' FOREIGN KEY ('ques_id') REFERENCES 'quest_ans' ('ques_id') ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	
 
@@ -40,7 +42,9 @@ CREATE TABLE `quest_ans` (
   'answer' longtext NOT NULL,
   PRIMARY KEY (`ques_id`),
   KEY `fk_quest_ans_quizzes` (`quiz_id`),
-  CONSTRAINT `fk_quest_ans_quizzes` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE
+  KEY 'fk_quest_ans_quest_prob' ('quest_id'),
+  CONSTRAINT `fk_quest_ans_quizzes` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`quiz_id`) ON DELETE CASCADE,
+  CONSTRAINT 'fk_quest_ans_quest_prob' FOREIGN KEY ('quest_id') REFERENCES 'quest_prob' ('quest_id') ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
