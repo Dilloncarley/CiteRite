@@ -52,20 +52,21 @@ $app->group('/professor-dashboard', $authenticated($netId), $authenticateForRole
         
         //professor dashboard
         $app->get('/', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin){
-            echo $twig->render('professor-dashboard.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin));
+            require_once('controllers/quiz/list-quizzes.php');
+            echo $twig->render('professor-dashboard.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quizzes' => $quizzes));
         });
 
         // Quiz group
         $app->group('/quiz', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
 
             // quiz form
-            $app->get('/create/quiz', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin){
-                echo $twig->render('create_quiz.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin));
+            $app->get('/create', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin){
+                echo $twig->render('quiz/create_quiz.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin));
             });
 
             // create quiz
-            $app->post('/create/quiz', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
-                require_once('controllers/create_quiz.php');
+            $app->post('/create', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+                require_once('controllers/quiz/create_quiz.php');
             });
 
             // view quiz
@@ -75,45 +76,110 @@ $app->group('/professor-dashboard', $authenticated($netId), $authenticateForRole
 
             // Delete quiz with ID
             $app->post('/delete/:id', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+                require_once('controllers/quiz/functions/deleteQuiz.php');
+                deleteQuiz($db, $id);
+                $app->response->redirect("/professor-dashboard");
+
 
             });
 
-            // Update quiz with ID
-            $app->post('/update/:id', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+            // Update quiz
+            $app->post('/update_quiz', function() use ($app, $db) {
+                require_once('controllers/quiz/update-quiz.php');
+               
+
+            });
+
+            ///QUESTIONS
+
+            //list all questions in quiz
+            $app->get('/:id/list/questions', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+                require_once('controllers/quiz/list-quiz.php');
+                require_once('controllers/question/functions/getQuestions.php');
+                $questions = getAllQuests($db, $id);
+            
+               
+                echo $twig->render('question/list_questions.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quiz' => $quiz, 'id' => $id, 'questions' => $questions));
+
+            });
+             // create question form
+             $app->get('/:id/question/create', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin){
+                 
+                require_once('controllers/quiz/list-quiz.php');
+                require_once('controllers/question/functions/countQuestions.php');
+                require_once('controllers/question/functions/getQuestions.php');
+
+                $questionNumber = countQuestions($db, $id);
+                $numberOfQuestions = json_decode($questionNumber, true);
+                
+                $numberOfQuestions = $numberOfQuestions['COUNT(quiz_id)'] + 1; //for new question
+                $questionsInQuiz = getAllQuests($db, $id);
+             
+               
+
+                echo $twig->render('question/create_question.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quiz' => $quiz, 'id' => $id, 'questions'=> $questionsInQuiz, 'number' => $numberOfQuestions));
+            });
+
+
+            // create question
+            $app->post('/:id/question/create', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+                require_once('controllers/quiz/list-quiz.php');
+                require_once('controllers/question/create-question.php');
+
+
+            });
+
+
+
+            // edit specific question
+            $app->get('/question/:id/update', function ($questId) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+                require_once('controllers/question/functions/countQuestions.php');
+                require_once('controllers/question/functions/getQuestions.php');
+                require_once('controllers/question/functions/getQuizId.php');
+                $quizId = getQuizId($db, $questId);
+                $rightAnswer = getIndividualRightAnswer($db,$quizId, $questId);
+                $wrongAnswer = getIndividualWrongAnswer($db,$quizId, $questId);
+         
+             
+                  
+                foreach ($rightAnswer as $right) {
+                    foreach ($wrongAnswer as $wrong) {
+                       $wrongAnswer = $wrong['problem'];
+                    }
+                    $rightAnswer = $right['answer'];
+                    $id = $right['quiz_id'];
+                    $row = $right['row_index'];
+                }
+                require_once('controllers/quiz/list-quiz.php');
+
+                $questionNumber = countQuestions($db, $id);
+                $numberOfQuestions = json_decode($questionNumber, true);
+                
+                $numberOfQuestions = $numberOfQuestions['COUNT(quiz_id)'] + 1; //for new question
+
+                $questionsInQuiz = getAllQuests($db, $id);
+
+                echo $twig->render('question/create_question.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quiz' => $quiz, 'id'=> $id, 'questId'=> $questId, 'questions'=> $questionsInQuiz, 'wrongAnswer' => $wrongAnswer, 'rightAnswer' => $rightAnswer, 'questionNumber' => $row, 'number' => $numberOfQuestions ));
+
+                
+            });
+            // Update specific question with ID
+            $app->post('/question/:id/update', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+
+            });
+
+            // Delete question with ID
+            $app->post('/question/:id/delete', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
 
             });
         });
         
 
-        // Questions group
-        $app->group('/quiz/question', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
-
-            // create question form
-            $app->get('/create', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin){
-
-            });
-            // create question
-            $app->post('/create', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
-
-            });
-
-            // update question form
-            $app->get('/update/:id', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
-
-            });
-            // Update question with ID
-            $app->post('/update/:id', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
-
-            });
-
-            // Delete question with ID
-            $app->post('/delete/:id', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
-
-            });
+       
 
             
 
-        });
+   
 
 });
 
@@ -167,34 +233,5 @@ $app->group('/student-dashboard', $authenticated($netId), function () use ($app,
     
 // });
 
-// $app->post('/update_quiz', function() use ($app, $db) {
-   
-//     $req = $app->request();
-//     $quizId = json_encode($req->post('quizId'));
-//     $quizUpdatedTitle = json_encode($req->post('quiz_title'));
-//     $quizUpdatedDate =  $req->post('date');
-//     $quizUpdatedTime = $req->post('time');
 
-//     $time_in_24_hour_format  =   date("H:i", strtotime($quizUpdatedTime));
-//     $timeStamp = $quizUpdatedDate .= " " . $time_in_24_hour_format . ":00";
-
-//     //quiz id check
-//     $idSql = "SELECT id FROM quizzes WHERE id=$quizId";
-//     $quizIdQuery = $db->query($idSql)->fetchColumn();
-
-//     if($quizIdQuery) { // was query a success?
-//         $sql = "UPDATE quizzes SET title=$quizUpdatedTitle, due='$timeStamp' WHERE id=$quizId";
-//         $updateQuizQuery= $db->query($sql);
-//         $response = 1;  
-
-//     } else {
-//         $response = 0;  
-//     }
-    
-//     $res = new \Slim\Http\Response();
-//     $res->setStatus(400);
-//     $res->headers->set('Content-Type', 'application/json');
-//     echo $response;
-  
-// });
 ?>

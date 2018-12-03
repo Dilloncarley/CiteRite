@@ -94,9 +94,9 @@
       }
       
     .header{
-        position: relative;
-        left: 10px;
+        margin-left:10px;
     }
+   
       </style>
     </head>
 
@@ -152,15 +152,24 @@
       
       
       <script type="text/javascript">
-       M.AutoInit();
-      
+       
+
+      $('.questionForm').on('submit', function (e) {
+      if ($('.editor').froalaEditor('core.isEmpty') || $('#test').froalaEditor('core.isEmpty') ) {
+        e.preventDefault();
+
+       M.toast({html: 'APA Citation fields cannot be empty!', classes: 'failure-toast'}) 
+
+        return false;
+      }
+    });
        $(function() {
        
 
-          $('.editor').froalaEditor({
+          $('textarea.editor').froalaEditor({
             theme: 'custom',
             height: 275,
-            zIndex: 2003,
+            zIndex: 1000,
             tabSpaces: 4,
             pastePlain: true,
             enter: $.FroalaEditor.ENTER_DIV,

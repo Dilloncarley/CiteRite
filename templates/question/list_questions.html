@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+{{quiz.quiz_id}} 
+{% include 'quiz/edit_quiz.html' %}
+
+    <div class="row">
+   {% for question in questions %} 
+
+        <div class="col s12 m4 center-align ">
+          <div class="welcome-card card blue-grey darken-1 hoverable">
+            <div class="card-content white-text">
+              <span class="card-title">Question  {{question.row_index}}</span>
+             <article class="truncate">{{question.answer}}</article>
+            </div>
+            <div class="card-action white-text">
+             
+   
+              <a class="white-text" href="/professor-dashboard/quiz/question/{{question.quest_id}}/update">Edit</a>
+            
+            </div>
+          </div>
+        </div> 
+        {% endfor %}
+    
+      </div>
+
+
+<div class="fixed-action-btn">
+  {% if quiz.published %}
+    <a href="/professor-dashboard/quiz/{{id}}/question/create" class="btn-floating btn-large waves-effect waves-light light-blue lighten-3 tooltipped disabled"  data-position="left" data-tooltip="Add Question" >
+        <i class="large material-icons">add</i>
+    </a>
+    
+
+    {%else%}
+    <a href="/professor-dashboard/quiz/{{id}}/question/create" class="btn-floating btn-large waves-effect waves-light light-blue lighten-3 tooltipped"  data-position="left" data-tooltip="Add Question" >
+      <i class="large material-icons">add</i>
+  </a>
+  {% endif %}
+</div>
+    <script type="text/javascript">
+      $('.tooltipped').tooltip();
+     </script>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends "layout.html" %}
+{% block title %}Quiz {{id}}{% endblock %}
+{% block head %}
+    {{ parent() }}
+    <!--Base css for editor-->
+    <link href="{{app.request.getRootUri}}/css/custom-theme.css" rel="stylesheet" type="text/css">
+    <link href="{{app.request.getRootUri}}/css/froala_editor.min.css" rel="stylesheet" type="text/css">
+    <link href="{{app.request.getRootUri}}/css/fullscreen.min.css" rel="stylesheet" type="text/css">
+    <!--custom style for citation editor-->
+    <style>
+        .active {
+            background-color: #81d4fa !important;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+{% include 'quiz/edit_quiz.html' %}
+<div class="container">
+
+    <!-- Navbar goes here -->
+    
+    
+    <!-- Page Layout here -->
+    
+           <form id="postQuiz" class="questionForm" action="/professor-dashboard/quiz/{{id}}/question/create" method="POST">
+                      
+            <div class="card blue-grey darken-1">
+                    {% if quiz.published == 1%}
+                    <input id="questId" name="questId" class="hide" value={{questId}}>
+                    <div class="row">
+                            <div class="input-field col m7 right ">
+                                    <button class="disabled btn btn-small waves-effect waves-dark light-blue lighten-3 tooltipped modal-trigger right"  data-position="top" data-tooltip="Save this question and add another question to quiz." type="submit" value="saveQuestion" name="postQuiz">
+                                            <i class="material-icons white-text left center"> add</i>  Add Question</button>
+                            </div>
+                          
+                        </div>
+                    {% else %}
+                    {% if questionNumber %} 
+                  <input id="questId" name="questId" class="hide" value={{questId}}>
+                    <div class="row">
+                            <div class="input-field col m7 right ">
+                                    <button class="btn btn-small waves-effect waves-dark light-blue lighten-3 tooltipped modal-trigger right"  data-position="top" data-tooltip="Save this question and add another question to quiz." type="submit" value="saveQuestion" name="postQuiz">
+                                            <i class="material-icons white-text left center"> add</i>  Add Question</button>
+                            </div>
+                          
+                        </div>
+                    {% else %}
+                    <div class="row">
+                            <div class="input-field col m7 right ">
+                                    <button class="btn btn-small waves-effect waves-dark light-blue lighten-3 tooltipped modal-trigger right"  data-position="top" data-tooltip="Save this question and add another question to quiz." type="submit" value="addQuestion" name="postQuiz">
+                                            <i class="material-icons white-text left center"> add</i>  Add Question</button>
+                            </div>
+
+                        </div>
+                    {% endif %}
+                    {% endif %}
+
+                    
+                 
+                        
+                        <div class="card-content white-text">
+
+                               
+                                <span class="card-title center large-text">Question {% if questionNumber %}{{questionNumber}}  {% else %} {{number}} {% endif %}</span>
+
+                              
+                                <ul class="pagination center ">
+                               
+                                        {% if questionNumber %} 
+                               
+                                            {% for question in questions %}
+                                       
+                                        
+                                                <li class="waves-effect white-text  {% if question.row_index == questionNumber%} active {% endif %}"><a href="/professor-dashboard/quiz/question/{{question.quest_id}}/update">{{question.row_index}}</a></li>
+                                            {% endfor %}
+                                        
+                                        {% else %}
+
+                                    
+
+                                               {% set numQuestions = number %}
+                                        
+                                               {% for question in questions %}
+                                               
+                                               <li class="waves-effect white-text"><a href="/professor-dashboard/quiz/question/{{question.quest_id}}/update">{{question.row_index}}</a></li>
+                                                {% endfor %}
+                                                   
+                                                <li class="waves-effect white-text active"><a href="#!">{{numQuestions}}</a></li>
+
+                                        {% endif %}
+                                      </ul>
+
+                        
+                                <div class="col s12 m6 ">
+                                        <span class="card-title">Correct APA Citation</span>
+                                        <textarea class="editor" name = "answer">{{rightAnswer}}</textarea>
+                          </div>
+
+
+                          <div class="col s12 m6 ">
+                              &nbsp;
+                         
+                          <span class="card-title">Incorrect APA Citation</span>
+                          <textarea id="test" class="editor"name ="problem">{{wrongAnswer}}</textarea>
+                          </div>
+                        </div>
+                        <div class="card-action">
+                                <div class="row">
+                                    {% if quiz.published == 0 %}
+                                       
+                                                {% if questionNumber %} 
+                                               
+                                                     
+                 
+                                                     <div class="input-field col s12 m4 push-m1">
+                                                         
+                                                             <button class="btn btn-large waves-effect waves-dark red tooltipped modal-trigger"  data-position="top" data-tooltip="Delete this question from quiz" type="submit" value="deleteQuestion" name="postQuiz">
+                                                                     <i class="material-icons white-text left center">delete</i> Delete Question</button>
+                                                     </div>
+                                                     
+                                                     <div class="input-field col s12 m4 push-m1">
+                                                             <button class="btn btn-large waves-effect waves-dark green tooltipped modal-trigger"  data-position="top" data-tooltip="Update this question on the quiz" type="submit" value="updateQuestion" name="postQuiz">
+                                                                     <i class="material-icons white-text left center"> update</i>  Update Question</button>
+                                                     </div>
+                                                     <div class="input-field col s12 m3 push-m1">
+                                                            <button class="btn btn-large waves-effect waves-dark light-blue lighten-3 tooltipped modal-trigger"  data-position="top" data-tooltip="Publish quiz for students to take" type="submit" value="updateQuestionAndPublish" name="postQuiz">
+                                                             Publish Quiz</button>
+                                                            </div>
+                                                
+                                                {% else %}
+                                                <div class="input-field col s12 m3 push-m4">
+                                                        <button class="btn btn-large waves-effect waves-dark light-blue lighten-3 tooltipped modal-trigger"  data-position="top" data-tooltip="Publish quiz for students to take" type="submit" value="publish" name="postQuiz">
+                                                         Publish Quiz</button>
+                                                        </div>
+
+                                                <div class="input-field col s12 m3 push-m4">
+                                                        <button class="btn btn-large waves-effect waves-dark light-blue lighten-3 tooltipped modal-trigger"  data-position="top" data-tooltip="Save question as draft" type="submit" value="saveDraft" name="postQuiz">
+                                                                <i class="material-icons white-text left center"> save</i>     Save</button>
+                                                                </div>
+                                                {% endif %}
+                                               
+                                                  
+                                    {% else %}
+                               
+                                       {% if questionNumber %} 
+                                     
+
+
+                                     
+                                      
+                                       <div class="input-field col s12 m4 push-m4">
+                                            <button class="btn btn-large waves-effect waves-dark green tooltipped modal-trigger"  data-position="top" data-tooltip="Update this question for students to see" type="submit" value="updateQuestion" name="postQuiz">
+                                                    <i class="material-icons white-text left center"> update</i>  Update Question</button>
+                                       </div>
+                                      
+                                    
+
+                                       {% else %}
+
+                                       
+
+                                 {% endif %}
+                                    {% endif %}
+                                        
+                                        
+                                          
+                                      </div>
+                        </div>
+                      </div>
+                 
+                    </form>
+      
+        
+    </div>
+<script type="text/javascript">
+ $('.tooltipped').tooltip();
+</script>
+    
+{% endblock %}
