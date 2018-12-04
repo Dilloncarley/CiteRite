@@ -1,0 +1,43 @@
+
+DROP TABLE IF EXISTS `user`;
+
+CREATE TABLE `user` (
+  `usrnme` varchar(100) NOT NULL,
+  `psswrd` varchar(100) NOT NULL,
+  `teach` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`usrnme`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `quiz_stats`;
+
+CREATE TABLE `quiz_stats` (
+  `quiz_id` int(11) NOT NULL,
+  `usrnme` varchar(100) NOT NULL,
+  `ttl_time` time DEFAULT NULL,
+  `ttl_attempts` int(11) DEFAULT NULL,
+  PRIMARY KEY (`quiz_id`,`usrnme`),
+  KEY `fk_quiz_stats_user` (`usrnme`),
+  CONSTRAINT `fk_quiz_stats_user` FOREIGN KEY (`usrnme`) REFERENCES `user` (`usrnme`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `quest_stats`;
+
+CREATE TABLE `quest_stats` (
+  `quiz_id` int(11) NOT NULL,
+  `ques_id` int(11) NOT NULL,
+  `usrnme` varchar(100) NOT NULL,
+  `time` time DEFAULT NULL,
+  `attmpt_cnt` int(11) DEFAULT NULL,
+  PRIMARY KEY (`quiz_id`,`ques_id`,`usrnme`),
+  KEY `fk_quest_stats_quiz_stats` (`usrnme`),
+  CONSTRAINT `fk_quest_stats_quiz_stats` FOREIGN KEY (`usrnme`) REFERENCES `quiz_stats` (`usrnme`) ON DELETE CASCADE,
+  CONSTRAINT `‘fk_quest_stats_quiz_stats’` FOREIGN KEY (`quiz_id`) REFERENCES `quiz_stats` (`quiz_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;

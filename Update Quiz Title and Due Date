@@ -1,0 +1,17 @@
+Updating a quiz title and due date:
+function title_date_update($new_title, $new_date, $q_id) {
+  $sql = ‘UPDATE quizzes SET description = ‘{$new_title}’ WHERE quiz_id = ‘{$q_id}’;
+  $retval = mysql_query($sql, $conn);
+  if(!$retval){
+  	die(‘Could not update data: ‘ . mysql_error());
+  }
+  $sql = ‘UPDATE quizzes SET due_date = ‘{$new_date}’ WHERE quiz_id = ‘{$q_id}’;
+  if(!$retval){
+  	die(‘Could not update data: ‘ . mysql_error());
+  }
+}
+// This function will expect the new title, new date, and the quiz id that is being updated.
+// This function expects the connection to the database to already be made under the variable $conn and that the database has already been selected, i.e. mysql_select_db(‘[INSERT NAME]’).
+// This function can be split into two separate functions if the case is needed.
+// This function will throw an error if the update is unable to be performed.
+// Be sure to check elements match the desired elements within the database.
