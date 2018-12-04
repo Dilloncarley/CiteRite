@@ -25,7 +25,7 @@
     }
 
     function getIndividualWrongAnswer($db,$quizId, $questId){
-        $probQuery = "SELECT * FROM (SELECT @x:=@x + 1 AS row_index, quest_id, quiz_id, problem
+        $probQuery = "SELECT * FROM (SELECT @x:=@x + 1 AS row_index, quest_id, quiz_id, problem, additional_info
             FROM quest_prob cross join
                  (select @x := 0) const
                  WHERE quiz_id = $quizId
@@ -72,6 +72,43 @@
                 return $error;
                 
             }
+    }
+
+    function getAllQuestsProblem($db, $quizId){
+    
+        $probQuery = "SELECT @x:=@x + 1 AS row_index, quest_id, quiz_id, problem, additional_info
+        FROM quest_prob cross join
+            (select @x := 0) const
+        WHERE quiz_id = $quizId
+        ORDER BY quest_id;";
+        $questionProblems = $db->query($probQuery);
+    
+    
+        
+        if($questionProblems) // were queries a success?
+        {
+    
+            return $questionProblems;
+        
+           
+        } else {
+            $error = $db->errorInfo();
+            return $error;
+            
+        }
+}
+
+    function getAllQuestsProblems($db, $quizId){
+        $query = ("SELECT @x:=@x + 1 AS row_index, quest_id, quiz_id, problem, additional_info
+        FROM quest_prob cross join
+            (select @x := 0) const
+        WHERE quiz_id = $quizId
+        ORDER BY quest_id");
+
+        $getquery = $db->prepare($query);
+        $getquery->execute();
+        return $getquery ;
+        
     }
 
     function getLastKnownQuestion($db, $quizId){

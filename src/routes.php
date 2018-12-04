@@ -139,17 +139,23 @@ $app->group('/professor-dashboard', $authenticated($netId), $authenticateForRole
                 $quizId = getQuizId($db, $questId);
                 $rightAnswer = getIndividualRightAnswer($db,$quizId, $questId);
                 $wrongAnswer = getIndividualWrongAnswer($db,$quizId, $questId);
-         
+                
+              
              
                   
                 foreach ($rightAnswer as $right) {
                     foreach ($wrongAnswer as $wrong) {
                        $wrongAnswer = $wrong['problem'];
+                       $info = $wrong['additional_info'];
                     }
                     $rightAnswer = $right['answer'];
                     $id = $right['quiz_id'];
                     $row = $right['row_index'];
+                 
+    
                 }
+
+              
                 require_once('controllers/quiz/list-quiz.php');
 
                 $questionNumber = countQuestions($db, $id);
@@ -159,7 +165,7 @@ $app->group('/professor-dashboard', $authenticated($netId), $authenticateForRole
 
                 $questionsInQuiz = getAllQuests($db, $id);
 
-                echo $twig->render('question/create_question.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quiz' => $quiz, 'id'=> $id, 'questId'=> $questId, 'questions'=> $questionsInQuiz, 'wrongAnswer' => $wrongAnswer, 'rightAnswer' => $rightAnswer, 'questionNumber' => $row, 'number' => $numberOfQuestions ));
+                echo $twig->render('question/create_question.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quiz' => $quiz, 'id'=> $id, 'questId'=> $questId, 'questions'=> $questionsInQuiz, 'wrongAnswer' => $wrongAnswer, 'info' => $info, 'rightAnswer' => $rightAnswer, 'questionNumber' => $row, 'number' => $numberOfQuestions ));
 
                 
             });
@@ -187,19 +193,148 @@ $app->group('/professor-dashboard', $authenticated($netId), $authenticateForRole
 
 $app->group('/student-dashboard', $authenticated($netId), function () use ($app, $db, $twig, $netId, $user_id, $isAdmin) {
         //student dashboard
-        $app->get('/', function() use ($app, $twig, $db, $netId, $isAdmin)  {
-            echo $twig->render('student-dashboard.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin));
+        $app->get('/', function () use ($app, $db, $twig, $user_id, $netId, $isAdmin){
+            require_once('controllers/quiz/list-quizzes.php');
+            echo $twig->render('student-dashboard.html', array('app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quizzes' => $quizzes));
         });
 
-        //specific quiz page
-        $app->get('/quiz/:quizId/question/:questId', function($quizId, $questId) use ($app, $twig, $db, $netId, $isAdmin) {
-            echo $twig->render('quiz.html', array('id' => $id,'app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin));
+
+        // //specific quiz page
+        // $app->get('/quiz/:quizId/question/:questId', function($quizId, $questId) use ($app, $twig, $db, $netId, $isAdmin) {
+        //     echo $twig->render('quiz.html', array('id' => $id,'app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin));
+        // });
+
+        //take quiz
+        $app->get('/take/quiz/:id', function($id) use ($app, $twig, $db, $netId, $user_id, $isAdmin) {
+            require_once('controllers/quiz/middleware/preventQuestionSkipping.php');
+            require_once('controllers/quiz/functions/getQuiz.php');
+            require_once('controllers/question/functions/getQuestions.php');
+            require_once('controllers/question/functions/countQuestions.php');
+            require_once('controllers/quiz/functions/findUserQuestionLocation.php');
+       
+
+            $userIsOnQuestion = findUserQuestionLocation($db, $id, $user_id);
+         
+            // var_dump($userIsOnQuestion);
+           
+            $quiz = individuaQuiz($id, $db);
+            $questionsInQuiz = getAllQuestsProblem($db, $id);
+
+            $probQuery = getAllQuestsProblems($db, $id);
+            
+            $pagination = array();
+            
+            while($rows =   $probQuery ->fetch(PDO::FETCH_BOTH))
+            {
+                $questId = $rows['quest_id'];
+                $quizId = $rows['quiz_id'];
+                $index = $rows['row_index'];
+
+               
+                array_push($pagination,  array("quiz_id"=> $quizId, "quest_id"=>$questId, "enabled" => canUserSeeQuestion($app, $db, $quizId, $questId, $user_id), "index"=> $index ) );
+            }
+
+            echo $twig->render('quiz/quiz.html', array('id' => $id,'app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quiz' =>$quiz, 'questions' => $questionsInQuiz, 'pagination' => $pagination, 'questionUserIsOn' => $userIsOnQuestion  ));
         });
+
+        
+        $app->get('/take/quiz/:quizId/question/:questId', function ($quizId, $questId) use ($app, $db, $twig, $user_id, $netId, $isAdmin){
+            require_once('controllers/quiz/middleware/preventQuestionSkipping.php');
+            require_once('controllers/quiz/functions/getQuiz.php');
+            require_once('controllers/question/functions/getQuestions.php');
+            require_once('controllers/question/functions/countQuestions.php');
+            require_once('controllers/quiz/functions/findUserQuestionLocation.php');
+
+            redirectIfQuestionSkipping($app, $db, $quizId, $questId, $user_id);
+
+            $rightAnswer = getIndividualRightAnswer($db,$quizId, $questId);
+
+                foreach ($rightAnswer as $right) {
+                    
+                    $rightAnswer = $right['answer'];
+                    $id = $right['quiz_id'];
+                    $row = $right['row_index'];
+                 
+    
+                }
+                
+            $userIsOnQuestion =  $questId;
+           
+            $quiz = individuaQuiz($quizId, $db);
+            $questionsInQuiz = getAllQuestsProblem($db, $quizId);
+            
+
+            $probQuery = getAllQuestsProblems($db, $quizId);
+            
+            $pagination = array();
+            
+            while($rows =   $probQuery ->fetch(PDO::FETCH_BOTH))
+            {
+                $questId = $rows['quest_id'];
+                $quizId = $rows['quiz_id'];
+                $index = $rows['row_index'];
+
+               
+                array_push($pagination,  array("quiz_id"=> $quizId, "quest_id"=>$questId, "enabled" => canUserSeeQuestion($app, $db, $quizId, $questId, $user_id), "index"=> $index ) );
+            }
+       
+
+           
+           
+
+            echo $twig->render('quiz/quiz.html', array('id' => $quizId, 'app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin, 'quiz' =>$quiz, 'questions' => $questionsInQuiz, 'pagination' => $pagination, 'questionUserIsOn' => $userIsOnQuestion  ));
+        });
+
+
+
+        // $app->group('/quiz/:id', function ($id) use ($app, $db, $twig, $user_id, $netId, $isAdmin) {
+          
+            $app->post('/quiz/check/:quizId/:questionId', function($quizId, $questId) use ($app, $twig, $db, $netId, $isAdmin, $user_id) {
+                require_once('controllers/question/functions/gradeQuestion.php');
+                require_once('controllers/question/functions/getQuestions.php');
+                
+                // gradeQuestion($db, $quizId, $questId, $user_id);
+
+                $rightAnswer = getIndividualRightAnswer($db,$quizId, $questId);
+
+                foreach ($rightAnswer as $right) {
+                    
+                    $rightAnswer = $right['answer'];
+                    $id = $right['quiz_id'];
+                    $row = $right['row_index'];
+                 
+    
+                }
+                           
+                $res = new \Slim\Http\Response();
+                $res->setStatus(400);
+                $res->headers->set('Content-Type', 'application/json');
+                echo $rightAnswer;
+                $db = null;
+
+            });
+            $app->post('/quiz/:quizId/grade/question/:questId', function($quizId, $questId) use ($app, $twig, $db, $netId, $isAdmin, $user_id) {
+                require_once('controllers/question/functions/gradeQuestion.php');
+                require_once('controllers/question/functions/getQuestions.php');
+                
+                gradeQuestion($db, $quizId, $questId, $user_id);
+
+                $rightAnswer = getIndividualRightAnswer($db,$quizId, $questId);
+                           
+                $res = new \Slim\Http\Response();
+                $res->setStatus(400);
+                $res->headers->set('Content-Type', 'application/json');
+                echo json_encode("dogs");
+                $db = null;
+                
+                
+
+            });
+
+        // });
 
         //
-        $app->post('/grade/quiz/:id', function($id) use ($app, $twig, $db, $netId, $isAdmin) {
-            echo $twig->render('quiz.html', array('id' => $id,'app' => $app, 'netId' => $netId, 'isAdmin' => $isAdmin));
-        });
+       
 });
 
 

@@ -12,7 +12,7 @@ if($_SERVER['SERVER_NAME'] == "pluto.cse.msstate.edu"){
 } else {
     //local environment
     $_SESSION['phpCAS']['user'] =  "abc123";
-    $_SESSION['phpCAS']['user_id'] = 1;
+    $_SESSION['phpCAS']['user_id'] = 2;
     $netId = $_SESSION['phpCAS']['user'];
     $user_id = $_SESSION['phpCAS']['user_id'];
 }
