@@ -13,7 +13,7 @@ if($insertQuizQuery) // was query a success?
 {
     //get id of the created quiz
     $quiz_id = $db->lastInsertId();
-    $app->response->redirect('professor-dashboard/quiz'.'/'.$quiz_id.'/question/create');
+    $app->response->redirect('/professor-dashboard/quiz'.'/'.$quiz_id.'/question/create');
 
 } else {
     print_r($db->errorInfo());
