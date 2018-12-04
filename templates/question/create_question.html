@@ -11,6 +11,9 @@
         .active {
             background-color: #81d4fa !important;
         }
+        .info:hover {
+                background-color: transparent !important;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -92,16 +95,29 @@
 
                         
                                 <div class="col s12 m6 ">
-                                        <span class="card-title">Correct APA Citation</span>
+                                                &nbsp;
+                                                &nbsp;
+                                        <span class="card-title">Correct APA Citation <a class="info btn-flat btn btn-small btn-floating tooltipped" data-position="bottom" data-tooltip="The correct citation to check against"><i class="material-icons white-text left center"> info</i></a></span>
                                         <textarea class="editor" name = "answer">{{rightAnswer}}</textarea>
                           </div>
 
+                          &nbsp;
+                          &nbsp;
+                          &nbsp;
+                          &nbsp;
+                          <div class="col s12 m6 ">
+                           
+                         
+                          <span class="card-title">Incorrect APA Citation <a class="info btn-flat btn btn-small btn-floating tooltipped" data-position="bottom" data-tooltip="This will be prompted to the student for them to correct"><i class="material-icons white-text left center"> info</i></a></span>
+                          <textarea id="test" class="editor"name ="problem">{{wrongAnswer}}</textarea>
+                          </div>
 
                           <div class="col s12 m6 ">
-                              &nbsp;
-                         
-                          <span class="card-title">Incorrect APA Citation</span>
-                          <textarea id="test" class="editor"name ="problem">{{wrongAnswer}}</textarea>
+                                        &nbsp;
+                                        &nbsp;
+                                        <span class="card-title">Additional Information <a class="info btn-flat btn btn-small btn-floating tooltipped" data-position="bottom" data-tooltip="Give students extra information about the citation (authors, pages used, doi, etc)"><i class="material-icons white-text left center"> info</i></a> </span>
+
+                                        <textarea class="editor" name="info">{{info}}</textarea>
                           </div>
                         </div>
                         <div class="card-action">

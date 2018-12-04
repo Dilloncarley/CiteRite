@@ -1,5 +1,5 @@
 <?php
-function createQuestion($db, $quizId, $answer, $prob){
+function createQuestion($db, $quizId, $answer, $prob, $info){
     $answer =   filter_var($answer );
     $prob =   filter_var($prob);
     $answerQuery = $db->prepare("INSERT INTO quest_ans (quiz_id, answer) VALUES(:quizId, :answer)");
@@ -11,18 +11,18 @@ function createQuestion($db, $quizId, $answer, $prob){
 
     $questId = $db->lastInsertId(); 
 
-    $probQuery = $db->prepare("INSERT INTO quest_prob (quiz_id, quest_id, problem) VALUES(:quizId, :questId, :prob)");
+    $probQuery = $db->prepare("INSERT INTO quest_prob (quiz_id, quest_id, problem, additional_info) VALUES(:quizId, :questId, :prob, :info)");
     $probQuery->bindParam(':quizId', $quizId, PDO::PARAM_INT);
     $probQuery->bindParam(':questId', $questId , PDO::PARAM_INT);
     $probQuery->bindParam(':prob', $prob, PDO::PARAM_STR);
-
+    $probQuery->bindParam(':info', $info, PDO::PARAM_STR);
 
 
     $probQuery->execute();
 
 }
 
-function saveQuestion($db, $quizId, $questId, $answer, $prob){
+function saveQuestion($db, $quizId, $questId, $answer, $prob, $info){
     $answer =   filter_var($answer );
     $prob =   filter_var($prob);
     $questId = filter_var($questId);
@@ -34,10 +34,11 @@ function saveQuestion($db, $quizId, $questId, $answer, $prob){
 
     $answerQuery->execute();
 
-    $probQuery = $db->prepare("UPDATE quest_prob SET problem = :prob WHERE quiz_id= :quizId AND quest_id = :questId");
+    $probQuery = $db->prepare("UPDATE quest_prob SET problem = :prob, additional_info = :info WHERE quiz_id= :quizId AND quest_id = :questId");
     $probQuery->bindParam(':quizId', $quizId, PDO::PARAM_INT);
     $probQuery->bindParam(':questId', $questId , PDO::PARAM_INT);
     $probQuery->bindParam(':prob', $prob, PDO::PARAM_STR);
+    $probQuery->bindParam(':info', $info, PDO::PARAM_STR);
 
 
 

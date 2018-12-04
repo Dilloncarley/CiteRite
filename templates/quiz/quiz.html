@@ -1,0 +1,167 @@
+{% extends "layout.html" %}
+{% block title %}Quiz {{id}}{% endblock %}
+{% block head %}
+    {{ parent() }}
+    <!--Base css for editor-->
+    <link href="{{app.request.getRootUri}}/css/custom-theme.css" rel="stylesheet" type="text/css">
+    <link href="{{app.request.getRootUri}}/css/froala_editor.min.css" rel="stylesheet" type="text/css">
+    <link href="{{app.request.getRootUri}}/css/fullscreen.min.css" rel="stylesheet" type="text/css">
+    <!--custom style for citation editor-->
+    
+{% endblock %}
+{% block content %}
+<span id="display" class="hide"></span>
+<input class="hide" id="quizId" value = "{{id}}">
+<div class="container">
+ <h3 class="white-text center">{{quiz.title}}</h3>
+ <ul class="pagination center">
+      {% for page in pagination %}
+    
+        <li class="waves-effect white-text   {% if page.quest_id == questionUserIsOn %} active {% endif %}"><a class="btn {% if page.enabled == 0 %}disabled{% endif %} white-text light-blue lighten-3" href="/student-dashboard/take/quiz/{{page.quiz_id}}/question/{{page.quest_id}}">{{page.index}}</a></li>
+
+    {% endfor %}
+  </ul>
+  <input class="hide" id="questionId" value = "{{questionUserIsOn}}">
+
+ 
+  {% for question in questions %}
+
+     {% if question.quest_id == questionUserIsOn %}
+     
+    <!-- <div class="row"> -->
+        <form class="save-form" action="/student-dashboard/quiz/{{id}}/grade/question/{{question.quest_id}}" method="POST">
+            <div class="col s12 m5 pull-m1">
+                    <div class="row">
+                            <div class="col s12 m12">
+                              <div class="card blue-grey darken-1 ">
+                                <div class="card-content white-text" style ="overflow: scroll;">
+                                  <span class="card-title">Journal Information</span>
+                                  {{question.additional_info}}
+                                </div>
+                                
+                              </div>
+                            </div>
+                          </div>
+            </div>
+      
+          
+           
+                    
+                      <div class="card blue-grey darken-1">
+                        <div class="card-content white-text">
+                          <span class="card-title">APA Citation</span>
+                          <div class="col s12 m6 ">
+                              &nbsp;
+                              &nbsp;
+                            <textarea class="editor" id = "problem" name = "answer">{{question.problem}} </textarea>
+                          </div>
+                        </div>
+                        <div class="card-action">
+                                <div class="row">
+                                        <div class="input-field col s12 m4 push-m5">
+                                           <button class="check btn btn-large waves-effect waves-dark light-blue lighten-3  " type="submit" name="action">
+                                            Submit</button>
+                                           </div>
+                                      </div>
+                        </div>
+                      </div>
+           
+                  <!-- </div>  -->
+                </form>
+                  {% endif %}
+                  {% endfor %}
+   
+    </div>
+    <script src="{{app.request.getRootUri}}/node_modules/diff/dist/diff.js"></script>
+    <script>
+   
+      var quizId = document.getElementById('quizId').value
+      var questionId = document.getElementById('questionId').value
+      var count = 0;
+      var errorCount = 0;
+        $(".check").click(function(e) {
+         
+          e.preventDefault();
+          var problemText = document.getElementById("problem").value
+         
+
+          postQuiz(problemText);
+         
+
+      
+        });
+      function postQuiz(problemText) {
+                        $.ajax({
+                            type: 'post',
+                            url: '/student-dashboard/quiz/check/' + quizId + '/' + questionId ,
+                            data: $('.saveForm').serialize(),
+                            success: function (res) {
+                             
+                             
+                              var probT =  problemText.replace(/&amp;nbsp;/g, " "); 
+                              probT = problemText.replace(/\s+/g, " ");
+                              probT =  probT.replace("<div>", ""); 
+                              probT =  probT.replace("</div>", ""); 
+                              probT = probT.replace(/&nbsp;/g, " "); 
+                              var answer = res.replace(/&nbsp;/g, " "); 
+                              
+                           
+                               checkCitation(answer, probT)
+                            }
+                            }).fail(function() {
+                                M.toast({html: 'Internal Error!', classes: 'failure-toast'}) 
+                            });
+                }
+
+
+                function checkCitation (one, other){
+         
+                  var diff = JsDiff.diffChars(one, other),
+                        display = document.getElementById('display'),
+                        error = false,
+                        hint = "",
+                        fragment = document.createDocumentFragment();
+
+                          diff.forEach(function(part){
+                            // green for additions, red for deletions
+                            // grey for common parts
+                            color = part.added ? 'green' :
+                              part.removed ? 'red' : 'grey';
+                            span = document.createElement('span');
+                            span.style.color = color;
+                            if(part.removed){
+                              error = true;
+                              errorCount += 1;
+                              hint = "You might be adding extra information..";
+                            }
+                            if(part.added){
+                              error = true;
+                              errorCount += 1;
+                              hint = "You might be missing something..";
+                              
+                            }
+                            span.appendChild(document
+                              .createTextNode(part.value));
+                            fragment.appendChild(span);
+                          });
+                        
+                          if(errorCount > 2){
+                            count +=1;
+                             console.log(count)
+                            console.log(hint)
+                            if(count >= 4){
+                              M.toast({html: hint, classes: 'failure-toast'});
+                            } else {
+                              M.toast({html: 'Sorry that is not correct! Try Again!', classes: 'failure-toast'})
+                            }
+                          
+                           
+                            } else {
+                              M.toast({html: 'That is correct!', classes: 'success-toast'})
+                            }
+                          display.appendChild(fragment);
+                }
+    
+      </script>
+{% endblock %}
+

@@ -2,11 +2,36 @@
 
 
 {% block content %}
-<style>
-    .student-header{
-        position: relative;
-        left: 10px;
-    }
-</style>
-<h4 class="white-text header">Student Dashboard</h4>
+
+<h4 class="white-text header" >Student Dashboard: Quizzes</h4>
+
+ 
+    <div class="row">
+      
+        {% for quiz in quizzes %}
+        <div class="col s12 m4 center-align ">
+          <div class="welcome-card card blue-grey darken-1 hoverable">
+            <div class="card-content white-text">
+              <span class="card-title">{{quiz.title}}</span>
+              Due {{quiz.due_date|date('D M Y  @ ha')}}
+            </div>
+            <div class="card-action white-text">
+             
+              <a class="white-text" href="/student-dashboard/take/quiz/{{quiz.quiz_id}}">Take Quiz</a>
+              
+            
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    
+      </div>
+
+
+
+
+    <script type="text/javascript">
+      $('.tooltipped').tooltip();
+
+     </script>
 {% endblock %}
